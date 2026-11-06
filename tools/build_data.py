@@ -5,16 +5,26 @@
   1. 各地区・総計で 男 + 女 = 計
   2. 7地区の合計 = 総計（世帯数・男・女・計のそれぞれ）
   3. data/sources.tsv に、値のある月がすべて載っている
+  4. data/sources.tsv の各月の PDF が sources/<年月>.pdf にあり、バイト数と sha256 が台帳と一致する
 どれかが合わなければ data.js を書かずに終了コード 1 で止まる。
 """
-import csv, json, pathlib, sys
+import csv, hashlib, json, pathlib, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 pop = json.loads((ROOT / 'data/population.json').read_text(encoding='utf-8'))
 with open(ROOT / 'data/sources.tsv', encoding='utf-8') as fh:
-    src_months = {r['month'] for r in csv.DictReader(fh, delimiter='\t')}
+    src = list(csv.DictReader(fh, delimiter='\t'))
+src_months = {r['month'] for r in src}
 
 errors = []
+for r in src:
+    pdf = ROOT / 'sources' / f"{r['month']}.pdf"
+    if not pdf.exists():
+        errors.append(f"{r['month']}: sources/{pdf.name} がない")
+        continue
+    b = pdf.read_bytes()
+    if len(b) != int(r['bytes']) or hashlib.sha256(b).hexdigest() != r['sha256']:
+        errors.append(f"{r['month']}: sources/{pdf.name} のバイト数か sha256 が台帳と違う")
 months = pop['months']
 for i, m in enumerate(months):
     tot = {k: pop['total'][k][i] for k in ('hh', 'm', 'f', 't')}
