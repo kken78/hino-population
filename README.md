@@ -11,6 +11,8 @@ https://kken78.github.io/hino-population/
 | ファイル | 中身 |
 |---|---|
 | `index.html` | 画面。`data.js` を読むだけで、外部の CSS・JavaScript・フォントは読み込まない |
+| `og.png` | SNS で共有したときに出る画像（OGP 画像、1200×630） |
+| `assets/og.svg` | OGP 画像の編集元 |
 | `data/population.json` | 転記した値（正本）。月は `months`、地区ごとに `hh`（世帯数）・`m`（男）・`f`（女）・`t`（計） |
 | `data/sources.tsv` | 出典の台帳（月・PDF の URL・バイト数・sha256・取得日） |
 | `sources/<年月>.pdf` | 出典の PDF の写し（例 `sources/2026-09.pdf`）。町のページから消えた後も原典を残すため、台帳と一緒にコミットする |
