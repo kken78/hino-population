@@ -1,0 +1,32 @@
+# 転記した値の検算と data.js の再生成の確認。
+# プルリクエストと main への push のたびに tools/build_data.py を実行し、
+# 作り直した data.js がコミットされたものと一致するかを確かめる。
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 検算と data.js の作り直し(build_data.py)
+        run: python3 tools/build_data.py
+
+      - name: data.js がコミットされたものと一致するか
+        run: |
+          if ! git diff --exit-code --stat -- data.js; then
+            echo "::error::data.js が data/population.json から作り直した結果と一致しません。python3 tools/build_data.py を実行してコミットしてください。"
+            exit 1
+          fi
