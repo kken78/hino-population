@@ -7,3 +7,4 @@
 5. 数値は、原典で確かめられるものだけを書く。推定で埋めない。確かめられない月は `null` にし、`missing` に理由を書く（README の「毎月の更新」）。
 6. データの更新と検査は、README の「毎月の更新」の手順で行う（`python3 tools/build_data.py`）。検算が合わなければ `data.js` は書き出されず、終了コード 1 で止まる。`data.js` は直接編集しない。
 7. PR と main への push のたびに、GitHub Actions（`.github/workflows/check.yml`）が `tools/build_data.py` を実行し、`data.js` がコミットされたものと一致するかを確かめる。
+8. 新しい月の取り込みは、GitHub Actions（`.github/workflows/update-data.yml`）が毎月5日・20日に `tools/crawl.py` で行い、PR を作る（README の「自動更新の仕組み」）。出典の PDF は `sources/<年月>.pdf` に置いてコミットする。自動の PR もマージは依頼者がする。

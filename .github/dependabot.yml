@@ -1,7 +1,11 @@
-# GitHub Actions のバージョン更新を月1回 PR で知らせる（Python は標準ライブラリのみで依存なし）
+# GitHub Actions と、巡回で使う pdfplumber（tools/requirements.txt）のバージョン更新を月1回 PR で知らせる
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: pip
+    directory: /tools
     schedule:
       interval: monthly

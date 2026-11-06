@@ -1,0 +1,143 @@
+# 毎月5日と20日の 7:00 JST に、町の「日野町人口情報の詳細」のページを巡回する（tools/crawl.py）。
+# 新しい月の PDF を取り込み、検算（tools/build_data.py）が合えば、
+# update/population-<年月> ブランチに commit して PR を作る（同じブランチの PR が開いていれば本文を更新する）。
+# PR は人が PDF と見比べてからマージする。自動ではマージしない。
+# 取り込むものが無く、新しい要確認の事項（差し替え・リンクの変更・月の不一致）だけがあれば Issue を作る。
+# 巡回に失敗したら（ページや PDF の作りが変わった、取得できない、検算が合わない）、ジョブを失敗させ、Issue を作る。
+# 必要な設定：Settings → Actions → General → Workflow permissions を「Read and write permissions」にし、
+#   「Allow GitHub Actions to create and approve pull requests」をオンにする。
+# 注意：GITHUB_TOKEN で作った PR では check.yml が自動では動かない。検算はこのジョブの中で行い、結果を PR 本文に載せる。
+name: update-data
+
+on:
+  schedule:
+    - cron: "0 22 4,19 * *" # 4日・19日 22:00 UTC = 5日・20日 7:00 JST
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 依存の取得（pdfplumber）
+        run: python3 -m pip install -r tools/requirements.txt
+
+      - name: 町のページを巡回（crawl.py）
+        id: crawl
+        run: |
+          python3 tools/crawl.py --report "$RUNNER_TEMP/report.json" --summary "$RUNNER_TEMP/summary.md"
+          cat "$RUNNER_TEMP/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          python3 - "$RUNNER_TEMP/report.json" >> "$GITHUB_OUTPUT" <<'PY'
+          import json, sys
+          r = json.load(open(sys.argv[1], encoding='utf-8'))
+          print(f"changed={'true' if r['changed'] else 'false'}")
+          print(f"month={r.get('branch_month', '')}")
+          PY
+
+      - name: PR を作成（既に開いていれば更新）
+        if: steps.crawl.outputs.changed == 'true'
+        env:
+          MONTH: ${{ steps.crawl.outputs.month }}
+        run: |
+          if [ -z "$MONTH" ]; then echo "::error::crawl.py の結果に足した月（branch_month）が無い"; exit 1; fi
+          BRANCH="update/population-${MONTH}"
+          TITLE="data: 人口情報の自動取り込み（${MONTH} まで）"
+          ADDED=$(python3 -c 'import json,sys; r=json.load(open(sys.argv[1],encoding="utf-8")); print("、".join([a["title"] for a in r["added"]] + [n["month"] + " を null" for n in r["nulls"]]))' "$RUNNER_TEMP/report.json")
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add data data.js sources
+          git commit -m "$TITLE" -m "${ADDED}（.github/workflows/update-data.yml による巡回）"
+          git push --force origin "$BRANCH"
+          {
+            echo "## 自動取り込み（毎月5日・20日）"
+            echo
+            cat "$RUNNER_TEMP/summary.md"
+            echo
+            echo "## マージの前に人が確かめること"
+            echo "- [ ] 「足した月」の表の値を、\`sources/<年月>.pdf\` の各地区の「地区合計」欄と最下段の「合計」欄と見比べる"
+            echo "- [ ] PDF の上の「人口情報 令和○年○月末現在」が、足した月と一致している"
+            echo "- [ ] 「null にした月」があれば、町のページで本当に掲載が無いかを確かめ、README の「未確認の月」に書く"
+            echo "- [ ] 「要確認の事項」があれば、README の「自動更新の仕組み」の手順で扱う"
+            echo
+            echo "このPRは .github/workflows/update-data.yml が自動で作成しました。検算（tools/build_data.py）はこのジョブの中で通っています。"
+          } > "$RUNNER_TEMP/body.md"
+          # 既に開いている PR があれば本文だけ更新（gh pr edit は Projects classic 廃止の影響で失敗するため REST を使う）
+          NUM=$(gh pr list --head "$BRANCH" --state open --json number -q '.[0].number')
+          if [ -n "$NUM" ]; then
+            gh api -X PATCH "repos/${{ github.repository }}/pulls/$NUM" -f "title=$TITLE" -F "body=@$RUNNER_TEMP/body.md" >/dev/null
+          else
+            gh pr create --base main --head "$BRANCH" --title "$TITLE" --body-file "$RUNNER_TEMP/body.md"
+            NUM=$(gh pr list --head "$BRANCH" --state open --json number -q '.[0].number')
+          fi
+          # 前の月の自動取り込みの PR が開いたままなら、この PR に含めたので閉じる
+          gh pr list --state open --json number,headRefName \
+            -q ".[] | select(.headRefName | startswith(\"update/population-\")) | select(.headRefName != \"$BRANCH\") | .number" |
+          while read -r OLD; do
+            gh pr comment "$OLD" --body "この PR の内容は #${NUM}（${BRANCH}）に含めたので閉じます。"
+            gh api -X PATCH "repos/${{ github.repository }}/pulls/$OLD" -f state=closed >/dev/null
+          done
+
+      - name: 要確認の事項を Issue にする（取り込むものが無いとき）
+        if: steps.crawl.outputs.changed == 'false'
+        run: |
+          python3 - "$RUNNER_TEMP/report.json" "$RUNNER_TEMP/review" <<'PY'
+          import json, pathlib, sys
+          r = json.load(open(sys.argv[1], encoding='utf-8'))
+          out = pathlib.Path(sys.argv[2]); out.mkdir()
+          for i, x in enumerate(x for x in r['review'] if not x['known']):
+              (out / f'{i}.title').write_text(f"人口情報の要確認：{x['month']} {x['kind']}", encoding='utf-8')
+              (out / f'{i}.md').write_text('\n'.join([
+                  f"町のページ（{r['page']}）の {r['checked']} の巡回で、次の事項が見つかりました。取り込みはしていません。",
+                  '', f"- 月：{x['month']}", f"- 種類：{x['kind']}", f"- 内容：{x['detail']}", '',
+                  '## 次にやること（README の「自動更新の仕組み」）',
+                  '- 差し替え：新旧の PDF を見比べ、値が変わっていれば README の「毎月の更新」の手順で population.json・台帳・sources/ を直す。',
+                  '- リンクの変更・月の不一致：町のページで正しい月の PDF かを確かめる。確かめられなければ、その月を null にして missing に理由を書く。',
+                  '', 'このIssueは .github/workflows/update-data.yml が自動で作成しました。']) + '\n', encoding='utf-8')
+          PY
+          for T in "$RUNNER_TEMP"/review/*.title; do
+            [ -e "$T" ] || continue
+            TITLE=$(cat "$T")
+            if gh issue list --state open --search "\"$TITLE\" in:title" --json title -q '.[].title' | grep -qxF "$TITLE"; then
+              echo "作成済み：$TITLE"; continue
+            fi
+            gh issue create --title "$TITLE" --body-file "${T%.title}.md"
+          done
+
+      - name: 巡回に失敗したら Issue を作る
+        if: failure()
+        run: |
+          TITLE="人口情報の巡回に失敗した"
+          if gh issue list --state open --search "\"$TITLE\" in:title" --json title -q '.[].title' | grep -qxF "$TITLE"; then
+            echo "作成済み：$TITLE"; exit 0
+          fi
+          {
+            echo "町の「日野町人口情報の詳細」のページ（https://www.town.shiga-hino.lg.jp/0000002185.html）の巡回に失敗しました。"
+            echo
+            echo "- 実行の記録：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo "## 次にやること"
+            echo "- 実行の記録の「町のページを巡回（crawl.py）」の段で、失敗の理由（「巡回に失敗した：」の行）を確かめる。"
+            echo "- ページや PDF の作りが変わったときは、tools/crawl.py の読み取りを直す。それまでは README の「毎月の更新」の手順で手で取り込む。"
+            echo "- 町のサイトの一時的な不調なら、Actions の画面から update-data を手で実行し直す（workflow_dispatch）。"
+            echo "- 町のページには直近およそ1年分しか載らないため、直すまでに古い月が消えないよう、早めに対応する。"
+            echo
+            echo "このIssueは .github/workflows/update-data.yml が自動で作成しました。直ったら閉じてください。"
+          } > "$RUNNER_TEMP/fail.md"
+          gh issue create --title "$TITLE" --body-file "$RUNNER_TEMP/fail.md"
