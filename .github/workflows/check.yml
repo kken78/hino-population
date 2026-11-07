@@ -1,6 +1,7 @@
 # 転記した値の検算と data.js の再生成の確認。
 # プルリクエストと main への push のたびに tools/build_data.py を実行し、
 # 作り直した data.js がコミットされたものと一致するかを確かめる。
+# あわせて、index.html の共通の部品が hino-portal の正本（shared/）と同じかを確かめる。
 name: check
 
 on:
@@ -30,3 +31,8 @@ jobs:
             echo "::error::data.js が data/population.json から作り直した結果と一致しません。python3 tools/build_data.py を実行してコミットしてください。"
             exit 1
           fi
+
+      - name: 共通の部品が hino-portal の正本と同じか
+        run: |
+          git clone --depth 1 https://github.com/kken78/hino-portal.git /tmp/hino-portal
+          python3 /tmp/hino-portal/shared/check.py index.html
