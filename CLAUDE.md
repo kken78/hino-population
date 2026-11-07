@@ -8,3 +8,4 @@
 6. データの更新と検査は、README の「毎月の更新」の手順で行う（`python3 tools/build_data.py`）。検算が合わなければ `data.js` は書き出されず、終了コード 1 で止まる。`data.js` は直接編集しない。
 7. PR と main への push のたびに、GitHub Actions（`.github/workflows/check.yml`）が `tools/build_data.py` を実行し、`data.js` がコミットされたものと一致するかを確かめる。
 8. 新しい月の取り込みは、GitHub Actions（`.github/workflows/update-data.yml`）が毎月5日・20日に `tools/crawl.py` で行い、PR を作る（README の「自動更新の仕組み」）。出典の PDF は `sources/<年月>.pdf` に置いてコミットする。自動の PR もマージは依頼者がする。
+9. `index.html` の共通の部品（`<!-- portal-shared:… -->` で囲んだ箇所）は手で変えない。変えるときは hino-portal の `shared/` の正本を先に変えてから写す（DESIGN.md ADR-1）。
