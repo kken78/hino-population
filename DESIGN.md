@@ -41,3 +41,18 @@ hino-portal の DESIGN.md 9.2 の段階2で、色と向きを3章（色）・6�
 - 増減率は計算した値なので、計算のしかたを書く。
 - 数字と単位を折り返さない（`white-space: nowrap`）。表の列の見出しの補いは、小さい字の2行目にする。
 - 直したところの文字は 14px 以上にする。文字の大きさとグラフの代替の表（4.3）の全体の見直しは段階3以降で行う。
+
+## ADR-3 文字の大きさを hino-portal DESIGN.md 5.2 に合わせる（2026-11-08）
+
+### 状況
+
+hino-portal の DESIGN.md 9.2 の段階3で、文字の大きさを 5.2 に合わせることになった。5.2 では、文字の大きさを共通の部品のトークン5つ（`--portal-fs-sub` 14px、`--portal-fs` 16px、`--portal-fs-h1` 18px、`--portal-fs-h3` 20px、`--portal-fs-h2` 24px）だけにし、14px より小さい文字を作らない。このページでは、出典の行（`--fs-2xs` 12.8px）と月ごとの資料へのリンク（`--fs-3xs` 12px）が 14px 未満だった（hino-portal-work の段階3の前の調べ。幅 360px で 13 の要素）。
+
+### 決定
+
+- ページのトークン `--fs-*` は名前を残し、値を5つのどれかの参照にする。`--fs-3xs`・`--fs-2xs`・`--fs-xs` は 14px、`--fs-sm`・`--fs-base` は 16px、`--fs-md` は 18px、`--fs-lg`・`--fs-h2` は 20px、`--fs-xl`・`--fs-h1` は 24px。狭い画面の上書きで小さくしない。
+- 直接の指定は、もともと無い。
+- `<small>` をやめる。数値カードの単位（人・世帯）は `span.u`、地区別一覧の列の見出しの補い（比べた時点）は `span.sub` にし、どちらもトークンで大きさを決める。
+- 共通の部品の CSS を hino-portal の shared/shell.css（`--portal-fs-h3` を足した版）から写し直す。
+- 幅が足りない箇所は、文字を小さくせずに配置で解く（shiga-hino-plans DESIGN.md ADR-8 の表）。このページでは、14px にして幅が足りなくなった箇所は無かった（月ごとの資料へのリンクは折り返して並ぶ。幅 360px と 1024px で横のはみ出しは無い）。
+- CI（`.github/workflows/check.yml`）で、hino-portal の `shared/check.py --fonts`（静的検査）と `shared/check_mobile.mjs`（幅 360px と 1024px での実寸の検査）を走らせる。
