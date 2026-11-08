@@ -1,7 +1,8 @@
 # 転記した値の検算と data.js の再生成の確認。
 # プルリクエストと main への push のたびに tools/build_data.py を実行し、
 # 作り直した data.js がコミットされたものと一致するかを確かめる。
-# あわせて、index.html の共通の部品が hino-portal の正本（shared/）と同じかを確かめる。
+# あわせて、index.html の共通の部品が hino-portal の正本（shared/）と同じかと、
+# 文字の大きさ（静的検査と、幅 360px と 1024px での実寸）を確かめる。
 name: check
 
 on:
@@ -32,7 +33,20 @@ jobs:
             exit 1
           fi
 
-      - name: 共通の部品が hino-portal の正本と同じか
+      # 文字の大きさは hino-portal DESIGN.md 5.2（DESIGN.md ADR-3）
+      - name: 共通の部品と文字の大きさ（hino-portal の shared/check.py）
         run: |
           git clone --depth 1 https://github.com/kken78/hino-portal.git /tmp/hino-portal
-          python3 /tmp/hino-portal/shared/check.py index.html
+          python3 /tmp/hino-portal/shared/check.py --fonts index.html
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: 実ブラウザでの文字の大きさと横のはみ出し（hino-portal の shared/check_mobile.mjs）
+        run: |
+          mkdir -p /tmp/pw && cd /tmp/pw
+          npm install --no-save --no-package-lock playwright@1.49.1
+          npx playwright install --with-deps chromium
+          cd "$GITHUB_WORKSPACE"
+          PLAYWRIGHT_MODULE=/tmp/pw/node_modules/playwright/index.mjs node /tmp/hino-portal/shared/check_mobile.mjs index.html
