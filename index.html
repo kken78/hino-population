@@ -39,10 +39,11 @@ button{font-family:inherit;cursor:pointer}
 .hero{background:linear-gradient(135deg,var(--ai-ink) 0%,var(--ai-deep) 45%,var(--ai) 100%);color:#fff;padding:40px 0 44px}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .kpi{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:14px 16px}
-.kpi .k-label{font-size:var(--fs-2xs);opacity:.8}
-.kpi .k-num{font-family:var(--serif);font-size:var(--fs-xl);line-height:1.3;font-variant-numeric:tabular-nums}
-.kpi .k-num small{font-family:var(--sans);font-size:var(--fs-2xs);margin-left:3px;opacity:.85}
-.kpi .k-sub{font-size:var(--fs-3xs);opacity:.75}
+.kpi .k-label{font-size:var(--fs-xs);opacity:.85}
+.kpi .k-num{font-family:var(--serif);font-size:var(--fs-xl);line-height:1.3;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi .k-num small{font-family:var(--sans);font-size:var(--fs-xs);margin-left:3px;opacity:.85}
+.kpi .k-sub{font-size:var(--fs-xs);opacity:.85}
+.nw{white-space:nowrap}
 section{padding:36px 0 0}
 .sec-head{margin-bottom:16px}
 .sec-head h2{font-family:var(--serif);font-size:var(--fs-h2);color:var(--ai-ink);letter-spacing:.03em}
@@ -53,35 +54,38 @@ section{padding:36px 0 0}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:11px;overflow:hidden}
 .seg button{border:none;background:#fff;color:var(--muted);font-size:var(--fs-xs);font-weight:600;padding:8px 14px;min-height:40px}
 .seg button.is-on{background:var(--ai-ink);color:#fff}
-.legend{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
-.lg{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 11px;font-size:var(--fs-2xs);color:var(--ink);min-height:32px}
-.lg i{width:12px;height:3px;border-radius:2px;display:inline-block}
-.lg.is-on{border-color:var(--ai-ink);font-weight:700}
-.chart{width:100%;overflow-x:auto}
-.chart svg{display:block;width:100%;min-width:560px;height:auto}
-.ax{font-size:11px;fill:var(--muted);font-family:var(--sans)}
+.key{display:flex;flex-wrap:wrap;gap:4px 18px;margin:4px 0 12px;font-size:var(--fs-xs);color:var(--ink)}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.key svg{width:28px;height:10px;flex:none}
+.multi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 16px}
+.sm{margin:0;min-width:0}
+.sm figcaption{display:flex;flex-direction:column;margin-bottom:4px;line-height:1.4}
+.sm .sm-name{font-size:var(--fs-base);font-weight:700;color:var(--ai-ink)}
+.sm .sm-val{font-size:var(--fs-xs);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sm-plot{display:flex;gap:4px}
+.sm-y{display:flex;flex-direction:column;justify-content:space-between;font-size:var(--fs-xs);color:var(--muted);text-align:right;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sm-plot svg{display:block;flex:1;min-width:0;width:100%;height:auto}
+.sm-x{display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--muted);margin-top:2px}
 .gl{stroke:var(--line);stroke-width:1}
-.base{stroke:#9AA8BE;stroke-dasharray:4 3}
-.ln{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;transition:opacity .15s}
-.dim .ln:not(.hl){opacity:.18}
-.dim .lbl:not(.hl){opacity:.25}
-.lbl{font-size:11px;font-family:var(--sans);font-weight:700}
-.chart-note{font-size:var(--fs-3xs);color:var(--muted);margin-top:8px}
+.ln{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart-note{font-size:var(--fs-xs);color:var(--muted);margin-top:12px}
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:var(--fs-sm);font-variant-numeric:tabular-nums;min-width:600px}
 th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-thead th{font-size:var(--fs-2xs);color:var(--muted);font-weight:700;background:#F7F9FC}
+thead th{font-size:var(--fs-xs);color:var(--muted);font-weight:700;background:#F7F9FC;vertical-align:bottom;line-height:1.4}
+thead th small{display:block;font-size:var(--fs-xs);font-weight:400}
 th:first-child,td:first-child{text-align:left}
 tbody th{font-weight:700;color:var(--ai-ink)}
 tr.total th,tr.total td{border-top:2px solid var(--ai-ink);font-weight:700;background:#F2F6FC}
-.neg{color:var(--shu)} .pos{color:var(--ai)}
 .src-note{font-size:var(--fs-2xs);color:var(--muted);margin-top:12px}
 .src-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .src-list a{font-size:var(--fs-3xs);border:1px solid var(--line);border-radius:6px;padding:2px 8px;text-decoration:none;background:#fff}
 .learn{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .learn h3{font-family:var(--serif);font-size:var(--fs-base);color:var(--ai-ink);margin-bottom:8px}
 .learn p{font-size:var(--fs-xs);color:var(--ink);margin-bottom:8px}
+@media (max-width:900px){.multi{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:820px){.kpis{grid-template-columns:1fr 1fr}.learn{grid-template-columns:1fr}}
+@media (max-width:600px){.multi{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 <!-- portal-shared:css start --><style>
 /* 日野町データポータル 共通の部品（見出し・ナビ・ページの見出し・フッター）。
@@ -150,8 +154,8 @@ tr.total th,tr.total td{border-top:2px solid var(--ai-ink);font-weight:700;backg
 <div class="kpis">
 <div class="kpi"><div class="k-label">町の人口</div><div class="k-num" id="kTot">–</div><div class="k-sub" id="kTotSub"></div></div>
 <div class="kpi"><div class="k-label">世帯数</div><div class="k-num" id="kHh">–</div><div class="k-sub" id="kHhSub"></div></div>
-<div class="kpi"><div class="k-label">前の月との差（人口）</div><div class="k-num" id="kMom">–</div><div class="k-sub" id="kMomSub"></div></div>
-<div class="kpi"><div class="k-label">期間の増減（人口）</div><div class="k-num" id="kSpan">–</div><div class="k-sub" id="kSpanSub"></div></div>
+<div class="kpi"><div class="k-label" id="kMomLabel">人口の増減</div><div class="k-num" id="kMom">–</div><div class="k-sub" id="kMomSub"></div></div>
+<div class="kpi"><div class="k-label" id="kSpanLabel">人口の増減</div><div class="k-num" id="kSpan">–</div><div class="k-sub" id="kSpanSub"></div></div>
 </div>
 </div>
 </div>
@@ -160,7 +164,7 @@ tr.total th,tr.total td{border-top:2px solid var(--ai-ink);font-weight:700;backg
 <section>
 <div class="wrap">
 <div class="sec-head"><h2>地区ごとの推移</h2>
-<p>「指数」は最初の月を100とした値です。人数の多い地区と少ない地区の増え方・減り方を同じ物差しで比べられます。地区名を押すと、その地区の線だけを強調します。</p></div>
+<p>地区ごとに小さなグラフを並べています。「指数」は最初の月を100とした値で、目盛りは全グラフで同じです。「人数」は人口そのもので、目盛りは地区ごとです。</p></div>
 <div class="card">
 <div class="chart-top">
 <h3 id="chartTitle">人口の指数（最初の月＝100）</h3>
@@ -168,8 +172,8 @@ tr.total th,tr.total td{border-top:2px solid var(--ai-ink);font-weight:700;backg
 <button type="button" data-mode="idx" class="is-on" aria-pressed="true">指数</button><button type="button" data-mode="abs" aria-pressed="false">人数</button>
 </div>
 </div>
-<div class="legend" id="legend"></div>
-<div class="chart" id="chart"></div>
+<div class="key" id="key"></div>
+<div class="multi" id="chart"></div>
 <p class="chart-note" id="chartNote"></p>
 </div>
 </div>
@@ -217,99 +221,138 @@ tr.total th,tr.total td{border-top:2px solid var(--ai-ink);font-weight:700;backg
 <script src="data.js"></script>
 <script>
 'use strict';
-const COLORS = ['#1E4E9C','#C33D2E','#2A8C82','#B7791F','#7A4EA3','#4F7F2A','#5B6B85'];
 const fmt = n => n.toLocaleString('ja-JP');
-const sgn = n => (n > 0 ? '+' : n < 0 ? '−' : '±') + fmt(Math.abs(n));
-const cls = n => n < 0 ? 'neg' : n > 0 ? 'pos' : '';
+const nw = s => '<span class="nw">' + s + '</span>';
+/* 増減は矢印と文言だけで示し、色を付けない（hino-portal DESIGN.md 3.3） */
+const chg = (n, unit, digits) => {
+  const a = digits == null ? fmt(Math.abs(n)) : Math.abs(n).toFixed(digits);
+  return n > 0 ? nw('▲ ' + a + unit + ' 増') : n < 0 ? nw('▼ ' + a + unit + ' 減') : nw('＝ 増減なし');
+};
 const M = POP.months, LB = POP.labels;
 const avail = M.map((_, i) => i).filter(i => POP.total.t[i] != null);
 const first = avail[0], last = avail[avail.length - 1], prev = avail[avail.length - 2];
-const jp = i => { const [y, m] = M[i].split('-').map(Number); return '令和' + (y - 2018) + '年' + m + '月末'; };
+const ym = i => M[i].split('-').map(Number);
+const jp = i => { const [y, m] = ym(i); return '令和' + (y - 2018) + '年' + m + '月末'; };
+/* 比べる時点の後ろの方は、年が同じなら月だけを書く（例「令和8年8月末 → 9月末」） */
+const jpTo = (a, b) => ym(a)[0] === ym(b)[0] ? ym(b)[1] + '月末' : jp(b);
+const months = (a, b) => { const [y1, m1] = ym(a), [y2, m2] = ym(b); return (y2 - y1) * 12 + (m2 - m1); };
+const period = (a, b) => jp(a) + ' → ' + jpTo(a, b);
 
 /* KPI */
 document.getElementById('asOf').textContent = jp(last);
 document.getElementById('footAsOf').textContent = jp(last);
 document.getElementById('kTot').innerHTML = fmt(POP.total.t[last]) + '<small>人</small>';
-document.getElementById('kTotSub').textContent = '男 ' + fmt(POP.total.m[last]) + '・女 ' + fmt(POP.total.f[last]);
+document.getElementById('kTotSub').innerHTML = jp(last) + '。' + nw('男 ' + fmt(POP.total.m[last]) + '人') + '・' + nw('女 ' + fmt(POP.total.f[last]) + '人');
 document.getElementById('kHh').innerHTML = fmt(POP.total.hh[last]) + '<small>世帯</small>';
 document.getElementById('kHhSub').textContent = jp(last);
-document.getElementById('kMom').innerHTML = sgn(POP.total.t[last] - POP.total.t[prev]) + '<small>人</small>';
-document.getElementById('kMomSub').textContent = jp(prev) + 'との比較';
-document.getElementById('kSpan').innerHTML = sgn(POP.total.t[last] - POP.total.t[first]) + '<small>人</small>';
-document.getElementById('kSpanSub').textContent = jp(first) + 'からの増減';
+const kpiChg = (id, a) => {
+  const d = POP.total.t[last] - POP.total.t[a];
+  document.getElementById(id + 'Label').innerHTML = '人口の増減' + nw('（' + months(a, last) + 'か月間）');
+  document.getElementById(id).innerHTML = chg(d, '人');
+  document.getElementById(id + 'Sub').innerHTML = nw(jp(a)) + ' ' + nw('→ ' + jpTo(a, last)) + '<br>' + nw(fmt(POP.total.t[a]) + '人') + ' ' + nw('→ ' + fmt(POP.total.t[last]) + '人');
+};
+kpiChg('kMom', prev);
+kpiChg('kSpan', first);
 
-/* chart */
-let mode = 'idx', focus = null;
-const legend = document.getElementById('legend');
-POP.districts.forEach((d, i) => {
-  const b = document.createElement('button');
-  b.type = 'button'; b.className = 'lg'; b.setAttribute('aria-pressed', 'false');
-  b.innerHTML = '<i style="background:' + COLORS[i] + '"></i>' + d.name;
-  b.onclick = () => { focus = focus === i ? null : i; draw(); };
-  legend.appendChild(b);
-});
+/* 地区ごとの小さなグラフ（hino-portal DESIGN.md 4.1。案D） */
+let mode = 'idx';
 document.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
   mode = b.dataset.mode;
   document.querySelectorAll('.seg button').forEach(x => { const on = x === b; x.classList.toggle('is-on', on); x.setAttribute('aria-pressed', on); });
   draw();
 });
-
-function draw(){
-  const W = 860, H = 380, L = 56, R = 92, T = 16, B = 34;
-  const ser = POP.districts.map(d => d.t.map(v => v == null ? null : (mode === 'idx' ? v / d.t[first] * 100 : v)));
-  const vals = ser.flat().filter(v => v != null);
-  let lo = Math.min(...vals), hi = Math.max(...vals);
-  if (mode === 'idx') { lo = Math.min(lo, 100); hi = Math.max(hi, 100); const pad = (hi - lo) * .12 || .5; lo -= pad; hi += pad; }
-  else { lo = 0; hi = Math.ceil(hi / 1000) * 1000; }
-  const x = i => L + (W - L - R) * i / (M.length - 1);
-  const y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
-  const ticks = []; const step = mode === 'idx' ? niceStep((hi - lo) / 5) : 1000;
-  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) ticks.push(+v.toFixed(4));
-  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="地区別人口の推移">';
-  ticks.forEach(v => { s += '<line class="gl" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text class="ax" x="' + (L - 8) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + (mode === 'idx' ? v.toFixed(step < 1 ? 1 : 0) : fmt(v)) + '</text>'; });
-  if (mode === 'idx') s += '<line class="base" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(100) + '" y2="' + y(100) + '"/>';
-  M.forEach((m, i) => { s += '<text class="ax" x="' + x(i) + '" y="' + (H - 12) + '" text-anchor="middle">' + LB[i] + '</text>'; });
-  s += '<g class="' + (focus != null ? 'dim' : '') + '">';
-  const ends = [];
-  ser.forEach((arr, k) => {
-    let d = '', pen = false, gap = '', lastI = null;
-    arr.forEach((v, i) => {
-      if (v == null) { pen = false; return; }
-      if (!pen && lastI != null) gap += 'M' + x(lastI).toFixed(1) + ' ' + y(arr[lastI]).toFixed(1) + 'L' + x(i).toFixed(1) + ' ' + y(v).toFixed(1);
-      d += (pen ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1); pen = true; lastI = i;
-    });
-    const hl = focus === k ? ' hl' : '';
-    if (gap) s += '<path class="ln' + hl + '" d="' + gap + '" stroke="' + COLORS[k] + '" stroke-dasharray="3 4" stroke-width="1.5"/>';
-    s += '<path class="ln' + hl + '" d="' + d + '" stroke="' + COLORS[k] + '"><title>' + POP.districts[k].name + '</title></path>';
-    ends.push({k, y: y(arr[last]), v: arr[last]});
-  });
-  ends.sort((a, b) => a.y - b.y);
-  for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 13) ends[i].y = ends[i - 1].y + 13;
-  ends.forEach(e => { s += '<text class="lbl' + (focus === e.k ? ' hl' : '') + '" x="' + (x(last) + 8) + '" y="' + (e.y + 4) + '" fill="' + COLORS[e.k] + '">' + POP.districts[e.k].name + ' ' + (mode === 'idx' ? e.v.toFixed(1) : fmt(e.v)) + '</text>'; });
-  s += '</g></svg>';
-  document.getElementById('chart').innerHTML = s;
-  document.getElementById('chartTitle').textContent = mode === 'idx' ? '人口の指数（' + LB[first] + '＝100）' : '人口（人）';
-  [...legend.children].forEach((b, i) => { b.classList.toggle('is-on', focus === i); b.setAttribute('aria-pressed', focus === i); });
-}
-function niceStep(r){ const p = Math.pow(10, Math.floor(Math.log10(r))); const n = r / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+const idxOf = o => o.t.map(v => v == null ? null : v / o.t[first] * 100);
+const valText = v => mode === 'idx' ? v.toFixed(1) : fmt(v) + '人';
 const miss = Object.keys(POP.missing || {});
 const missText = miss.map(m => LB[M.indexOf(m)] + '：' + POP.missing[m]).join(' ');
-document.getElementById('chartNote').textContent = 'R＝令和。' + (miss.length ? '点線の区間は、間の月の値がありません（' + missText + '）' : '');
+const keyLine = (cls, label) => '<span><svg viewBox="0 0 28 10" aria-hidden="true">' + cls + '</svg>' + label + '</span>';
+
+function path(arr, x, y){
+  let d = '', gap = '', pen = false, lastI = null;
+  arr.forEach((v, i) => {
+    if (v == null) { pen = false; return; }
+    if (!pen && lastI != null) gap += 'M' + x(lastI).toFixed(1) + ' ' + y(arr[lastI]).toFixed(1) + 'L' + x(i).toFixed(1) + ' ' + y(v).toFixed(1);
+    d += (pen ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1); pen = true; lastI = i;
+  });
+  return {d, gap};
+}
+
+function draw(){
+  const idx = mode === 'idx';
+  const tot = idxOf(POP.total);
+  const ser = POP.districts.map(d => idx ? idxOf(d) : d.t);
+  /* 指数は全グラフで同じ目盛り。人数は地区ごとの目盛り（10人単位に丸める） */
+  let shared = null;
+  if (idx) {
+    const all = ser.flat().concat(tot).filter(v => v != null);
+    shared = [Math.floor(Math.min(...all)), Math.ceil(Math.max(...all))];
+  }
+  const range = arr => {
+    if (shared) return shared;
+    const v = arr.filter(x => x != null);
+    let lo = Math.floor(Math.min(...v) / 10) * 10, hi = Math.ceil(Math.max(...v) / 10) * 10;
+    if (hi === lo) hi = lo + 10;
+    return [lo, hi];
+  };
+  const box = document.getElementById('chart');
+  box.innerHTML = POP.districts.map((d, k) => {
+    const [lo, hi] = range(ser[k]);
+    const yl = idx ? [String(hi), String(lo)] : [fmt(hi), fmt(lo)];
+    return '<figure class="sm"><figcaption><span class="sm-name">' + d.name + '</span><span class="sm-val">' + LB[last] + ' ' + valText(ser[k][last]) + '</span></figcaption>'
+      + '<div class="sm-plot"><div class="sm-y" aria-hidden="true"><span>' + yl[0] + '</span><span>' + yl[1] + '</span></div><svg role="img" data-k="' + k + '" data-lo="' + lo + '" data-hi="' + hi + '"></svg></div>'
+      + '<div class="sm-x" aria-hidden="true"><span>' + LB[0] + '</span><span>' + LB[M.length - 1] + '</span></div></figure>';
+  }).join('');
+  box.querySelectorAll('svg').forEach(svg => {
+    const k = +svg.dataset.k, lo = +svg.dataset.lo, hi = +svg.dataset.hi;
+    const W = Math.max(60, Math.round(svg.getBoundingClientRect().width)), H = Math.max(70, Math.round(W * 0.55));
+    const P = 6;
+    const x = i => P + (W - 2 * P) * i / (M.length - 1);
+    const y = v => P + (H - 2 * P) * (1 - (v - lo) / (hi - lo));
+    let s = '<line class="gl" x1="0" x2="' + W + '" y1="' + P + '" y2="' + P + '"/><line class="gl" x1="0" x2="' + W + '" y1="' + (H - P) + '" y2="' + (H - P) + '"/>';
+    if (idx) {
+      const t = path(tot, x, y);
+      s += '<path class="ln" d="' + t.d + t.gap + '" stroke="var(--portal-cat5)" stroke-width="1.5" stroke-dasharray="1.5 3.5"/>';
+    }
+    const p = path(ser[k], x, y);
+    if (p.gap) s += '<path class="ln" d="' + p.gap + '" stroke="var(--portal-ai)" stroke-width="1.5" stroke-dasharray="4 3"/>';
+    s += '<path class="ln" d="' + p.d + '" stroke="var(--portal-ai)"/>';
+    ser[k].forEach((v, i) => { if (v != null) s += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="' + (i === last ? 3.5 : 2.2) + '" fill="var(--portal-ai)"/>'; });
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.setAttribute('height', H);
+    svg.innerHTML = s;
+    const name = POP.districts[k].name;
+    svg.setAttribute('aria-label', idx
+      ? name + 'の人口の指数の月ごとの推移（' + jp(first) + '＝100。' + jp(first) + '〜' + jp(M.length - 1) + '）。' + jp(last) + 'は ' + valText(ser[k][last]) + '。目盛りは ' + lo + '〜' + hi + '（全グラフで同じ）。灰色の点線は町全体で、' + jp(last) + 'は ' + tot[last].toFixed(1)
+      : name + 'の人口の月ごとの推移（' + jp(first) + '〜' + jp(M.length - 1) + '）。' + jp(last) + 'は ' + valText(ser[k][last]) + '。目盛りは ' + fmt(lo) + '〜' + fmt(hi) + '人（地区ごと）');
+  });
+  document.getElementById('chartTitle').textContent = idx ? '人口の指数（' + LB[first] + '＝100）の月ごとの推移' : '人口（人）の月ごとの推移';
+  document.getElementById('key').innerHTML = keyLine('<line x1="1" x2="27" y1="5" y2="5" stroke="var(--portal-ai)" stroke-width="2"/><circle cx="14" cy="5" r="2.5" fill="var(--portal-ai)"/>', '地区')
+    + (idx ? keyLine('<line x1="1" x2="27" y1="5" y2="5" stroke="var(--portal-cat5)" stroke-width="1.5" stroke-dasharray="1.5 3.5" stroke-linecap="round"/>', '町全体（' + LB[last] + ' ' + tot[last].toFixed(1) + '）') : '');
+  document.getElementById('chartNote').textContent = 'R＝令和。'
+    + (idx ? '指数＝各月の人口 ÷ ' + LB[first] + 'の人口 × 100（小数1桁に四捨五入）。目盛りは全グラフで同じ（' + shared[0] + '〜' + shared[1] + '）。灰色の点線は町全体（7地区の合計）の指数。'
+           : '目盛りは地区ごと（各グラフの左の数字が目盛りの範囲）。町全体の系列は指数のときだけ重ねています。')
+    + (miss.length ? '点線の区間は、間の月の値がありません（' + missText + '）' : '');
+}
 document.getElementById('missingNote').textContent = miss.length ? missText : '';
 draw();
+let rz = null;
+window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(draw, 150); });
 
 /* table */
-document.getElementById('tblLead').textContent = jp(last) + '時点。「前月比」は' + jp(prev) + '、「期間の増減」は' + jp(first) + 'との差です。';
-document.querySelector('#tbl thead').innerHTML = '<tr><th scope="col">地区</th><th scope="col">世帯数</th><th scope="col">男</th><th scope="col">女</th><th scope="col">人口</th><th scope="col">前月比</th><th scope="col">期間の増減</th><th scope="col">増減率</th></tr>';
+document.getElementById('tblLead').textContent = jp(last) + '時点。増減は ' + period(prev, last) + '（' + months(prev, last) + 'か月間）と ' + period(first, last) + '（' + months(first, last) + 'か月間）の人口の差です。増減率＝' + jp(first) + 'からの増減 ÷ ' + jp(first) + 'の人口 × 100（小数1桁に四捨五入）。R＝令和。';
+document.querySelector('#tbl thead').innerHTML = '<tr><th scope="col">地区</th><th scope="col">世帯数</th><th scope="col">男</th><th scope="col">女</th><th scope="col">人口</th>'
+  + '<th scope="col">増減<small>' + LB[prev] + '末 → ' + LB[last] + '末</small></th>'
+  + '<th scope="col">増減<small>' + LB[first] + '末 → ' + LB[last] + '末</small></th>'
+  + '<th scope="col">増減率<small>' + LB[first] + '末 → ' + LB[last] + '末</small></th></tr>';
 const row = (name, o, total) => {
   const dm = o.t[last] - o.t[prev], ds = o.t[last] - o.t[first], r = ds / o.t[first] * 100;
-  return '<tr' + (total ? ' class="total"' : '') + '><th scope="row">' + name + '</th><td>' + fmt(o.hh[last]) + '</td><td>' + fmt(o.m[last]) + '</td><td>' + fmt(o.f[last]) + '</td><td>' + fmt(o.t[last]) + '</td><td class="' + cls(dm) + '">' + sgn(dm) + '</td><td class="' + cls(ds) + '">' + sgn(ds) + '</td><td class="' + cls(ds) + '">' + (r > 0 ? '+' : r < 0 ? '−' : '') + Math.abs(r).toFixed(1) + '%</td></tr>';
+  return '<tr' + (total ? ' class="total"' : '') + '><th scope="row">' + name + '</th><td>' + fmt(o.hh[last]) + '</td><td>' + fmt(o.m[last]) + '</td><td>' + fmt(o.f[last]) + '</td><td>' + fmt(o.t[last]) + '</td><td>' + chg(dm, '') + '</td><td>' + chg(ds, '') + '</td><td>' + chg(Math.sign(ds) * Math.abs(r), '%', 1) + '</td></tr>';
 };
 document.querySelector('#tbl tbody').innerHTML = POP.districts.map(d => row(d.name, d)).join('') + row('町全体', POP.total, true);
 
 /* sources */
 document.getElementById('srcList').innerHTML = avail.map(i => {
-  const [y, m] = M[i].split('-').map(Number);
+  const [y, m] = ym(i);
   return '<a href="https://www.town.shiga-hino.lg.jp/cmsfiles/contents/0000002/2185/R' + (y - 2018) + '.' + m + '.pdf" target="_blank" rel="noopener">' + jp(i) + '</a>';
 }).join('');
 </script>
