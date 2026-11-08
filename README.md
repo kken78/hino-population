@@ -11,6 +11,7 @@ https://kken78.github.io/hino-population/
 | ファイル | 中身 |
 |---|---|
 | `index.html` | 画面。`data.js` を読むだけで、外部の CSS・JavaScript・フォントは読み込まない |
+| `DESIGN.md` | 設計の決定（ADR） |
 | `og.png` | SNS で共有したときに出る画像（OGP 画像、1200×630） |
 | `assets/og.svg` | OGP 画像の編集元 |
 | `data/population.json` | 転記した値（正本）。月は `months`、地区ごとに `hh`（世帯数）・`m`（男）・`f`（女）・`t`（計） |
@@ -22,7 +23,11 @@ https://kken78.github.io/hino-population/
 | `tools/requirements.txt` | `tools/crawl.py` が使う pdfplumber のバージョン |
 | `.github/workflows/update-data.yml` | 毎月5日・20日に `tools/crawl.py` を実行し、PR か Issue を作る |
 | `.github/workflows/keepalive.yml` | 定期実行が止まらないようにする（毎月1日） |
-| `.github/workflows/check.yml` | PR と main への push のたびに検算し、`data.js` がコミットされたものと一致するかを確かめる |
+| `.github/workflows/check.yml` | PR と main への push のたびに検算し、`data.js` がコミットされたものと一致するかと、共通の部品が hino-portal の正本と同じかを確かめる |
+
+## 共通の部品
+
+`index.html` の見出し・分野のナビ・ページの一覧・フッターと、その CSS（`<!-- portal-shared:〈名前〉 start/end -->` で囲んだ箇所）は、[hino-portal](https://github.com/kken78/hino-portal) の `shared/` の正本の写し（DESIGN.md ADR-1）。手元では `python3 <hino-portal>/shared/check.py index.html` で、正本と同じかを確かめる（CI でも同じ検査を行う）。
 
 ## 自動更新の仕組み
 
