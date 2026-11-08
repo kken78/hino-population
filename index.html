@@ -224,10 +224,10 @@ tr.total th,tr.total td{border-top:2px solid var(--ai-ink);font-weight:700;backg
 'use strict';
 const fmt = n => n.toLocaleString('ja-JP');
 const nw = s => '<span class="nw">' + s + '</span>';
-/* 増減は矢印と文言だけで示し、色を付けない（hino-portal DESIGN.md 3.3） */
+/* 増減は、負の値に △ を付け、向きを文言で示す。正の値に印は付けない。色は付けない（hino-portal DESIGN.md 3.3。DESIGN.md ADR-4） */
 const chg = (n, unit, digits) => {
   const a = digits == null ? fmt(Math.abs(n)) : Math.abs(n).toFixed(digits);
-  return n > 0 ? nw('▲ ' + a + unit + ' 増') : n < 0 ? nw('▼ ' + a + unit + ' 減') : nw('＝ 増減なし');
+  return n > 0 ? nw(a + unit + ' 増') : n < 0 ? nw('△' + a + unit + ' 減') : nw('0 増減なし');
 };
 const M = POP.months, LB = POP.labels;
 const avail = M.map((_, i) => i).filter(i => POP.total.t[i] != null);
