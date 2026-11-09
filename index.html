@@ -352,7 +352,7 @@ const row = (name, o, total) => {
 document.querySelector('#tbl tbody').innerHTML = POP.districts.map(d => row(d.name, d)).join('') + row('町全体', POP.total, true);
 
 /* sources */
-document.getElementById('srcList').innerHTML = avail.map(i => {
+document.getElementById('srcList').innerHTML = avail.slice().reverse().map(i => {  // 新しい月から並べる（hino-portal DESIGN.md 6.5。DESIGN.md ADR-5）
   const [y, m] = ym(i);
   return '<a href="https://www.town.shiga-hino.lg.jp/cmsfiles/contents/0000002/2185/R' + (y - 2018) + '.' + m + '.pdf" target="_blank" rel="noopener">' + jp(i) + '</a>';
 }).join('');
