@@ -62,8 +62,19 @@ section{padding:36px 0 0}
 .sm{margin:0;min-width:0}
 .sm figcaption{display:flex;flex-direction:column;margin-bottom:4px;line-height:1.4}
 .sm .sm-name{font-size:var(--fs-base);font-weight:700;color:var(--ai-ink)}
-.sm .sm-val{font-size:var(--fs-xs);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sm .sm-val{font-size:var(--fs-xs);color:var(--ink);font-variant-numeric:tabular-nums;display:flex;flex-direction:column;align-items:flex-start}
+.sm .sm-val .sm-when{color:var(--muted)}
+.sm .sm-val b{font-size:var(--fs-base)}
+.sm .sm-val .sm-ix{color:var(--ink)}
+.sm .sm-val .sm-nums{display:inline-flex;gap:0 8px;align-items:baseline;white-space:nowrap}
+.sm-x .yy{white-space:nowrap}
+.sm-x .s{display:none}
+@media (max-width:767px){.sm-x .f{display:none}.sm-x .s{display:inline}}
 .sm-plot{display:flex;gap:4px}
+.sm-plot svg{cursor:crosshair;touch-action:pan-y}
+.sm-plot svg:focus-visible{outline:2px solid #000;box-shadow:0 0 0 4px #FFD43D}
+.hov-help{font-size:var(--fs-xs);color:var(--muted);margin:0 0 2px}
+.hov-note{font-size:var(--fs-xs);color:var(--ink);font-weight:700;min-height:1.6em;margin:0 0 6px}
 .sm-y{display:flex;flex-direction:column;justify-content:space-between;font-size:var(--fs-xs);color:var(--muted);text-align:right;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
 .sm-plot svg{display:block;flex:1;min-width:0;width:100%;height:auto}
 .sm-x{display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--muted);margin-top:2px}
@@ -174,6 +185,8 @@ tr.total th,tr.total td{border-top:2px solid var(--ai-ink);font-weight:700;backg
 </div>
 </div>
 <div class="key" id="key"></div>
+<p class="hov-help">グラフの上にマウスを置くか指で触れると、またはグラフを選んで左右の矢印キーを押すと、その月の人数と指数を7地区そろえて表示します。</p>
+<p class="hov-note" id="hovNote" aria-live="polite"></p>
 <div class="multi" id="chart"></div>
 <p class="chart-note" id="chartNote"></p>
 </div>
@@ -233,6 +246,7 @@ const M = POP.months, LB = POP.labels;
 const avail = M.map((_, i) => i).filter(i => POP.total.t[i] != null);
 const first = avail[0], last = avail[avail.length - 1], prev = avail[avail.length - 2];
 const ym = i => M[i].split('-').map(Number);
+const jpS = i => { const [y, m] = ym(i); return '令和' + (y - 2018) + '年' + m + '月'; };
 const jp = i => { const [y, m] = ym(i); return '令和' + (y - 2018) + '年' + m + '月末'; };
 /* 比べる時点の後ろの方は、年が同じなら月だけを書く（例「令和8年8月末 → 9月末」） */
 const jpTo = (a, b) => ym(a)[0] === ym(b)[0] ? ym(b)[1] + '月末' : jp(b);
@@ -265,7 +279,7 @@ document.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
 const idxOf = o => o.t.map(v => v == null ? null : v / o.t[first] * 100);
 const valText = v => mode === 'idx' ? v.toFixed(1) : fmt(v) + '人';
 const miss = Object.keys(POP.missing || {});
-const missText = miss.map(m => LB[M.indexOf(m)] + '：' + POP.missing[m]).join(' ');
+const missText = miss.map(m => jp(M.indexOf(m)) + '：' + POP.missing[m]).join(' ');
 const keyLine = (cls, label) => '<span><svg viewBox="0 0 28 10" aria-hidden="true">' + cls + '</svg>' + label + '</span>';
 
 function path(arr, x, y){
@@ -278,6 +292,43 @@ function path(arr, x, y){
   return {d, gap};
 }
 
+function capText(k, i){
+  if (i == null) i = last;
+  const d = POP.districts[k], n = d.t[i], ix = idxOf(d)[i];
+  if (n == null) return '<span class="sm-when">' + jp(i) + '</span><span class="sm-nums">値なし</span>';
+  return '<span class="sm-when">' + jp(i) + '</span><span class="sm-nums"><b>' + fmt(n) + '人</b>' + (mode === 'idx' ? '<span class="sm-ix">指数 ' + ix.toFixed(1) + '</span>' : '') + '</span>';
+}
+let hov = null;
+function showMonth(i){
+  hov = i;
+  const idx = mode === 'idx', tot = idxOf(POP.total);
+  document.querySelectorAll('#chart .sm-val').forEach(e => { e.innerHTML = capText(+e.dataset.k, i); });
+  document.querySelectorAll('#chart svg').forEach(svg => {
+    const g = svg.querySelector('.hv'); if (!g) return;
+    if (i == null) { g.innerHTML = ''; return; }
+    const k = +svg.dataset.k, d = POP.districts[k], v = idx ? idxOf(d)[i] : d.t[i];
+    const X = svg._x(i).toFixed(1);
+    g.innerHTML = '<line x1="' + X + '" x2="' + X + '" y1="0" y2="' + svg._H + '" stroke="var(--ink)" stroke-width="1" opacity=".35"/>'
+      + (v == null ? '' : '<circle cx="' + X + '" cy="' + svg._y(v).toFixed(1) + '" r="4.5" fill="#fff" stroke="var(--portal-ai)" stroke-width="2.5"/>');
+  });
+  const st = document.getElementById('hovNote');
+  if (st) st.textContent = i == null ? '' : '表示中の月：' + jp(i) + (idx ? '（町全体の指数 ' + (tot[i] == null ? '値なし' : tot[i].toFixed(1)) + '）' : '');
+}
+function monthAt(svg, clientX){
+  const r = svg.getBoundingClientRect(), W = svg._W, P = svg._P;
+  const px = (clientX - r.left) * W / r.width;
+  return Math.max(0, Math.min(M.length - 1, Math.round((px - P) / (W - 2 * P) * (M.length - 1))));
+}
+document.getElementById('chart').addEventListener('pointerdown', e => { const svg = e.target.closest('svg'); if (svg && svg._x) showMonth(monthAt(svg, e.clientX)); });
+document.getElementById('chart').addEventListener('pointermove', e => { const svg = e.target.closest('svg'); if (svg && svg._x) showMonth(monthAt(svg, e.clientX)); });
+document.getElementById('chart').addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') showMonth(null); });
+document.getElementById('chart').addEventListener('focusout', e => { if (!document.getElementById('chart').contains(e.relatedTarget)) showMonth(null); });
+document.getElementById('chart').addEventListener('keydown', e => {
+  if (!e.target.closest('svg')) return;
+  const to = e.key === 'ArrowLeft' ? (hov == null ? last : hov) - 1 : e.key === 'ArrowRight' ? (hov == null ? last : hov) + 1 : e.key === 'Home' ? 0 : e.key === 'End' ? M.length - 1 : null;
+  if (to == null) return; e.preventDefault(); showMonth(Math.max(0, Math.min(M.length - 1, to)));
+});
+document.getElementById('chart').addEventListener('focusin', e => { if (e.target.closest('svg') && hov == null) showMonth(last); });
 function draw(){
   const idx = mode === 'idx';
   const tot = idxOf(POP.total);
@@ -299,9 +350,9 @@ function draw(){
   box.innerHTML = POP.districts.map((d, k) => {
     const [lo, hi] = range(ser[k]);
     const yl = idx ? [String(hi), String(lo)] : [fmt(hi), fmt(lo)];
-    return '<figure class="sm"><figcaption><span class="sm-name">' + d.name + '</span><span class="sm-val">' + LB[last] + ' ' + valText(ser[k][last]) + '</span></figcaption>'
-      + '<div class="sm-plot"><div class="sm-y" aria-hidden="true"><span>' + yl[0] + '</span><span>' + yl[1] + '</span></div><svg role="img" data-k="' + k + '" data-lo="' + lo + '" data-hi="' + hi + '"></svg></div>'
-      + '<div class="sm-x" aria-hidden="true"><span>' + LB[0] + '</span><span>' + LB[M.length - 1] + '</span></div></figure>';
+    return '<figure class="sm"><figcaption><span class="sm-name">' + d.name + '</span><span class="sm-val" data-k="' + k + '">' + capText(k) + '</span></figcaption>'
+      + '<div class="sm-plot"><div class="sm-y" aria-hidden="true"><span>' + yl[0] + '</span><span>' + yl[1] + '</span></div><svg role="img" tabindex="0" data-k="' + k + '" data-lo="' + lo + '" data-hi="' + hi + '"></svg></div>'
+      + '<div class="sm-x" aria-hidden="true"><span class="yy"><span class="f">' + jpS(0) + '</span><span class="s">' + jpS(0).replace('令和', '') + '</span></span><span class="yy"><span class="f">' + jpS(M.length - 1) + '</span><span class="s">' + jpS(M.length - 1).replace('令和', '') + '</span></span></div></figure>';
   }).join('');
   box.querySelectorAll('svg').forEach(svg => {
     const k = +svg.dataset.k, lo = +svg.dataset.lo, hi = +svg.dataset.hi;
@@ -318,6 +369,8 @@ function draw(){
     if (p.gap) s += '<path class="ln" d="' + p.gap + '" stroke="var(--portal-ai)" stroke-width="1.5" stroke-dasharray="4 3"/>';
     s += '<path class="ln" d="' + p.d + '" stroke="var(--portal-ai)"/>';
     ser[k].forEach((v, i) => { if (v != null) s += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="' + (i === last ? 3.5 : 2.2) + '" fill="var(--portal-ai)"/>'; });
+    s += '<g class="hv"></g>';
+    svg._x = x; svg._y = y; svg._H = H; svg._P = P; svg._W = W;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     svg.setAttribute('height', H);
     svg.innerHTML = s;
@@ -326,11 +379,11 @@ function draw(){
       ? name + 'の人口の指数の月ごとの推移（' + jp(first) + '＝100。' + jp(first) + '〜' + jp(M.length - 1) + '）。' + jp(last) + 'は ' + valText(ser[k][last]) + '。目盛りは ' + lo + '〜' + hi + '（全グラフで同じ）。灰色の点線は町全体で、' + jp(last) + 'は ' + tot[last].toFixed(1)
       : name + 'の人口の月ごとの推移（' + jp(first) + '〜' + jp(M.length - 1) + '）。' + jp(last) + 'は ' + valText(ser[k][last]) + '。目盛りは ' + fmt(lo) + '〜' + fmt(hi) + '人（地区ごと）');
   });
-  document.getElementById('chartTitle').textContent = idx ? '人口の指数（' + LB[first] + '＝100）の月ごとの推移' : '人口（人）の月ごとの推移';
+  document.getElementById('chartTitle').textContent = idx ? '人口の指数（' + jp(first) + '＝100）の月ごとの推移' : '人口（人）の月ごとの推移';
   document.getElementById('key').innerHTML = keyLine('<line x1="1" x2="27" y1="5" y2="5" stroke="var(--portal-ai)" stroke-width="2"/><circle cx="14" cy="5" r="2.5" fill="var(--portal-ai)"/>', '地区')
-    + (idx ? keyLine('<line x1="1" x2="27" y1="5" y2="5" stroke="var(--portal-cat5)" stroke-width="1.5" stroke-dasharray="1.5 3.5" stroke-linecap="round"/>', '町全体（' + LB[last] + ' ' + tot[last].toFixed(1) + '）') : '');
-  document.getElementById('chartNote').textContent = 'R＝令和。'
-    + (idx ? '指数＝各月の人口 ÷ ' + LB[first] + 'の人口 × 100（小数1桁に四捨五入）。目盛りは全グラフで同じ（' + shared[0] + '〜' + shared[1] + '）。灰色の点線は町全体（7地区の合計）の指数。'
+    + (idx ? keyLine('<line x1="1" x2="27" y1="5" y2="5" stroke="var(--portal-cat5)" stroke-width="1.5" stroke-dasharray="1.5 3.5" stroke-linecap="round"/>', '町全体（' + jp(last) + ' 指数 ' + tot[last].toFixed(1) + '）') : '');
+  document.getElementById('chartNote').textContent = ''
+    + (idx ? '指数＝各月末の人口 ÷ ' + jp(first) + 'の人口 × 100（小数1桁に四捨五入）。目盛りは全グラフで同じ（' + shared[0] + '〜' + shared[1] + '）。灰色の点線は町全体（7地区の合計）の指数。'
            : '目盛りは地区ごと（各グラフの左の数字が目盛りの範囲）。町全体の系列は指数のときだけ重ねています。')
     + (miss.length ? '点線の区間は、間の月の値がありません（' + missText + '）' : '');
 }
@@ -342,9 +395,9 @@ window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(draw
 /* table */
 document.getElementById('tblLead').textContent = jp(last) + '時点。増減は ' + period(prev, last) + '（' + months(prev, last) + 'か月間）と ' + period(first, last) + '（' + months(first, last) + 'か月間）の人口の差です。増減率＝' + jp(first) + 'からの増減 ÷ ' + jp(first) + 'の人口 × 100（小数1桁に四捨五入）。R＝令和。';
 document.querySelector('#tbl thead').innerHTML = '<tr><th scope="col">地区</th><th scope="col">世帯数</th><th scope="col">男</th><th scope="col">女</th><th scope="col">人口</th>'
-  + '<th scope="col">増減<span class="sub">' + LB[prev] + '末 → ' + LB[last] + '末</span></th>'
-  + '<th scope="col">増減<span class="sub">' + LB[first] + '末 → ' + LB[last] + '末</span></th>'
-  + '<th scope="col">増減率<span class="sub">' + LB[first] + '末 → ' + LB[last] + '末</span></th></tr>';
+  + '<th scope="col">増減<span class="sub">' + jp(prev) + ' → ' + jpTo(prev, last) + '</span></th>'
+  + '<th scope="col">増減<span class="sub">' + jp(first) + ' → ' + jpTo(first, last) + '</span></th>'
+  + '<th scope="col">増減率<span class="sub">' + jp(first) + ' → ' + jpTo(first, last) + '</span></th></tr>';
 const row = (name, o, total) => {
   const dm = o.t[last] - o.t[prev], ds = o.t[last] - o.t[first], r = ds / o.t[first] * 100;
   return '<tr' + (total ? ' class="total"' : '') + '><th scope="row">' + name + '</th><td>' + fmt(o.hh[last]) + '</td><td>' + fmt(o.m[last]) + '</td><td>' + fmt(o.f[last]) + '</td><td>' + fmt(o.t[last]) + '</td><td>' + chg(dm, '') + '</td><td>' + chg(ds, '') + '</td><td>' + chg(Math.sign(ds) * Math.abs(r), '%', 1) + '</td></tr>';
