@@ -53,7 +53,7 @@ section{padding:36px 0 0}
 .chart-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
 .chart-top h3{font-size:var(--fs-md);color:var(--ai-ink)}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:11px;overflow:hidden}
-.seg button{border:none;background:#fff;color:var(--muted);font-size:var(--fs-xs);font-weight:600;padding:8px 14px;min-height:40px}
+.seg button{border:none;background:#fff;color:var(--muted);font-size:var(--fs-xs);font-weight:700;padding:8px 14px;min-height:40px}
 .seg button.is-on{background:var(--ai-ink);color:#fff}
 .key{display:flex;flex-wrap:wrap;gap:4px 18px;margin:4px 0 12px;font-size:var(--fs-xs);color:var(--ink)}
 .key span{display:inline-flex;align-items:center;gap:6px}
@@ -155,7 +155,7 @@ tr.total th,tr.total td{border-top:2px solid var(--ai-ink);font-weight:700;backg
 <p class="portal-area">統計とくらし</p>
 <h1 class="portal-title">地区別人口</h1>
 <p class="portal-lead">町が毎月公表している「人口情報」の7地区の合計欄を、月ごとに並べています。</p>
-<p class="portal-asof">資料の時点：<span id="asOf">令和8年9月末</span>現在。転記日：2026年11月5日</p>
+<p class="portal-asof">資料の時点：<span id="asOf">令和8年9月末</span>現在。資料を転記した日：2026年11月5日</p>
 <!-- portal-shared:siblings start -->
 <nav class="portal-siblings" aria-label="統計とくらしのページ"><span class="portal-lbl">このほかのページ</span><span aria-current="page">地区別人口</span><a href="https://kken78.github.io/hino-dashboard/">日野のすがた</a><a href="https://kken78.github.io/choisoko-hino-dashboard/">チョイソコひの 利用状況</a></nav>
 <!-- portal-shared:siblings end -->
@@ -198,7 +198,7 @@ tr.total th,tr.total td{border-top:2px solid var(--ai-ink);font-weight:700;backg
 <div class="sec-head"><h2>地区別一覧</h2><p id="tblLead"></p></div>
 <div class="card">
 <div class="table-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
-<p class="src-note">出典：日野町「<a href="https://www.town.shiga-hino.lg.jp/0000002185.html" target="_blank" rel="noopener">日野町人口情報の詳細</a>」（住民課）の各月末の PDF。7地区の「地区合計」欄と最下段の「合計」欄を転記しています。行政区ごとの内訳は原典をご覧ください。</p>
+<p class="src-note">出典：日野町「<a href="https://www.town.shiga-hino.lg.jp/0000002185.html">日野町人口情報の詳細</a>」（住民課）の各月末の PDF。7地区の「地区合計」欄と最下段の「合計」欄を転記しています。行政区ごとの内訳は原典をご覧ください。</p>
 <div class="src-list" id="srcList"></div>
 </div>
 </div>
@@ -213,7 +213,7 @@ tr.total th,tr.total td{border-top:2px solid var(--ai-ink);font-weight:700;backg
 <p>転記した値は、月ごとに「男＋女＝計」「7地区の合計＝町の合計」が合うことを確かめています。</p></div>
 <div class="card"><h3>ご利用の注意</h3>
 <p id="missingNote"></p>
-<p>町のページには直近およそ1年分の PDF が載っています。正確な数値は<a href="https://www.town.shiga-hino.lg.jp/0000002185.html" target="_blank" rel="noopener">町の公式ページ</a>でご確認ください。</p></div>
+<p>町のホームページには直近およそ1年分の PDF が載っています。正確な数値は<a href="https://www.town.shiga-hino.lg.jp/0000002185.html">町のホームページ</a>でご確認ください。</p></div>
 </div>
 </div>
 </section>
@@ -393,7 +393,7 @@ let rz = null;
 window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(draw, 150); });
 
 /* table */
-document.getElementById('tblLead').textContent = jp(last) + '時点。増減は ' + period(prev, last) + '（' + months(prev, last) + 'か月間）と ' + period(first, last) + '（' + months(first, last) + 'か月間）の人口の差です。増減率＝' + jp(first) + 'からの増減 ÷ ' + jp(first) + 'の人口 × 100（小数1桁に四捨五入）。R＝令和。';
+document.getElementById('tblLead').textContent = jp(last) + '時点。増減は ' + period(prev, last) + '（' + months(prev, last) + 'か月間）と ' + period(first, last) + '（' + months(first, last) + 'か月間）の人口の差です。増減率＝' + jp(first) + 'からの増減 ÷ ' + jp(first) + 'の人口 × 100（小数1桁に四捨五入）。';
 document.querySelector('#tbl thead').innerHTML = '<tr><th scope="col">地区</th><th scope="col">世帯数</th><th scope="col">男</th><th scope="col">女</th><th scope="col">人口</th>'
   + '<th scope="col">増減<span class="sub">' + jp(prev) + ' → ' + jpTo(prev, last) + '</span></th>'
   + '<th scope="col">増減<span class="sub">' + jp(first) + ' → ' + jpTo(first, last) + '</span></th>'
