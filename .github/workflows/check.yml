@@ -34,10 +34,10 @@ jobs:
           fi
 
       # 文字の大きさは hino-portal DESIGN.md 5.2（DESIGN.md ADR-3）
-      - name: 共通の部品と文字の大きさ（hino-portal の shared/check.py）
+      - name: 共通の部品と文字の大きさ・表記と太さ（hino-portal の shared/check.py）
         run: |
           git clone --depth 1 https://github.com/kken78/hino-portal.git /tmp/hino-portal
-          python3 /tmp/hino-portal/shared/check.py --fonts index.html
+          python3 /tmp/hino-portal/shared/check.py --fonts --hyoki index.html
 
       - uses: actions/setup-node@v7
         with:
